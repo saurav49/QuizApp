@@ -1,18 +1,17 @@
-import React, { useState, createContext } from "react";
+import React, { useState, createContext, Dispatch } from "react";
 
 export type initialThemeType = {
   theme: string;
-  setTheme: any;
+  setTheme: Dispatch<React.SetStateAction<string>>;
 };
 
 export type ChildrenType = {
   children: object;
 };
 
-export const ThemeContext = createContext<initialThemeType>({
-  theme: "dark",
-  setTheme: () => "dark",
-});
+export const ThemeContext = createContext<initialThemeType>(
+  {} as initialThemeType
+);
 
 export const ThemeProvider = ({ children }: ChildrenType) => {
   const [theme, setTheme] = useState("dark");

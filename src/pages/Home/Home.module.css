@@ -1,0 +1,16 @@
+.quizContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 90vh;
+}
+
+.quizContainerDark {
+  background-color: #243b53;
+  color: #fff;
+}
+
+.quizContainerLight {
+  background-color: #f8f9fb;
+  color: #504a40;
+}

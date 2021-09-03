@@ -1,0 +1,31 @@
+.answerCard {
+  width: 88%;
+  margin: 0.5em 0em;
+  padding: 1.3em;
+  border-radius: 0.5em;
+  text-align: center;
+  cursor: pointer;
+}
+
+.answerCard > p {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.answerCardDark {
+  background-color: #4b4b4b7e;
+  color: #fff;
+}
+
+.answerCardLight {
+  background-color: rgba(196, 196, 196, 0.582);
+  color: #504a40;
+}
+
+.answerCardCorrect {
+  background-color: #34d399;
+}
+
+.answerCardWrong {
+  background-color: #f87171;
+}

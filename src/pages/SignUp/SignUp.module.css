@@ -1,0 +1,93 @@
+.signupPage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 90vh;
+}
+
+.signupPageDark {
+  background-color: #243b53;
+}
+
+.signupPageLight {
+  background-color: #f8f9fb;
+}
+
+.signupComponent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 0.5em;
+  padding: 1.5em;
+}
+
+.signupComponentDark {
+  background-color: #102a43;
+  color: #fff;
+}
+
+.signupComponentLight {
+  background-color: #dee4e7;
+  color: #333;
+}
+
+input {
+  border-radius: 0.5em;
+  padding: 1em 2em;
+  border: none;
+  outline: none;
+}
+
+.inputComponent {
+  margin: 0.8em 0em;
+}
+
+.inputDark {
+  background-color: #243b53;
+  color: #fff;
+}
+
+.inputLight {
+  background-color: #ffffff;
+  color: #333;
+}
+
+.btn {
+  border-radius: 2em;
+  padding: 1em 3em;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border: none;
+  margin: 0.5em 0em;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  background-color: #303f9f;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btnIcon {
+  font-size: 1.3rem;
+  margin: 0em 0.2em;
+}
+
+.navigateBtn {
+  margin: 1em 0em;
+}
+
+.navigateBtn > span {
+  font-weight: 700;
+  margin: 0em 0.5em;
+  color: #303f9f;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.passwordIcon {
+  transform: translate(-33px, 4px);
+  padding: 0;
+  margin: 0;
+}

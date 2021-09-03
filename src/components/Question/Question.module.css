@@ -1,0 +1,36 @@
+.questionComponent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3em 0em;
+}
+
+.questionComponentDark {
+  background-color: #243b53;
+  color: #fff;
+}
+
+.questionComponentLight {
+  background-color: #f8f9fb;
+  color: #504a40;
+}
+
+.questionnoandpointsComponent {
+  width: 71%;
+  margin: 1em 0em;
+  display: flex;
+  justify-content: space-between;
+}
+
+.questionnoandpointsComponent > p {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.questionnoandpointsComponentDark > p > span {
+  color: rgba(247, 247, 247, 0.5);
+}
+
+.questionnoandpointsComponentLight > p > span {
+  color: #504a40c9;
+}
