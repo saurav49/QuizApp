@@ -9,15 +9,15 @@ import { ThemeProvider, QuizProvider, AuthProvider } from "./context/index";
 
 ReactDOM.render(
   <React.StrictMode>
-    <AuthProvider>
-      <ThemeProvider>
-        <QuizProvider>
-          <Router>
+    <Router>
+      <QuizProvider>
+        <AuthProvider>
+          <ThemeProvider>
             <App />
-          </Router>
-        </QuizProvider>
-      </ThemeProvider>
-    </AuthProvider>
+          </ThemeProvider>
+        </AuthProvider>
+      </QuizProvider>
+    </Router>
   </React.StrictMode>,
   document.getElementById("root")
 );

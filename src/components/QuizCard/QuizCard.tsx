@@ -13,11 +13,11 @@ const QuizCard = ({
   totalTime,
 }: QuizType) => {
   const { theme } = useTheme();
-  const { setChosenQuizId } = useQuizData();
+  const { dispatch } = useQuizData();
   const navigate = useNavigate();
 
   const takeToQuestion = (id: string) => {
-    setChosenQuizId(id);
+    dispatch({ type: "ADD_QUIZ_ID", payload: { quizId: id } });
     navigate("/question");
   };
 

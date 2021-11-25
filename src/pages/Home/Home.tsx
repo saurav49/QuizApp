@@ -5,11 +5,11 @@ import { QuizType } from "../../components/QuizCard/Quiz.types";
 
 const Home = () => {
   const { theme } = useTheme();
-  const { quizzes } = useQuizData();
+  const { state } = useQuizData();
 
   return (
     <>
-      {quizzes?.map((quiz: QuizType, index: number) => {
+      {state.quizzes?.map((quiz: QuizType, index: number) => {
         return (
           <div
             className={

@@ -1,49 +1,104 @@
 import {
   createContext,
-  useContext,
   useState,
   ReactNode,
   Dispatch,
   SetStateAction,
 } from "react";
-import axios from "axios";
-import { signupURL, validateEmail, validatePassword } from "../utils";
+import axios, { AxiosError } from "axios";
+import { signupURL, loginURL } from "../utils";
+import { useNavigate } from "react-router-dom";
+import { SelectedOption } from "../components/AnswerCard/AnswerCard";
+import { saveUserResponseURL, getUserDataURL } from "../utils";
+import { useQuizData } from "../hooks/index";
 
 export type AnswerTaken = {
+  _id: string;
   questionId: string;
   selectedOptionId: string;
   isRight: boolean;
 };
 
 export type QuizTaken = {
+  _id: string;
   quizId: string;
-  total: number;
+  totalScore: number;
   answerTaken: AnswerTaken[];
 };
 
 export type User = {
+  _id: string;
   username: string;
   email: string;
   password: string;
   quizTaken: QuizTaken[];
 };
 
-export type AuthContextType = {
+export type UserResponseData = {
+  _id: string;
   username: string;
-  setUsername: Dispatch<SetStateAction<string>>;
   email: string;
-  setEmail: Dispatch<SetStateAction<string>>;
-  password: string;
-  setPassword: Dispatch<SetStateAction<string>>;
-  confirmPassword: string;
-  setConfirmPassword: Dispatch<SetStateAction<string>>;
-  error: string;
-  setError: Dispatch<SetStateAction<string>>;
-  showPassword: boolean;
-  setShowPassword: Dispatch<SetStateAction<boolean>>;
-  showConfirmPassword: boolean;
-  setShowConfirmPassword: Dispatch<SetStateAction<boolean>>;
-  handleSignUp: () => any;
+  quizTaken: QuizTaken[];
+};
+
+export type UserResponse = {
+  success: boolean;
+  token: string;
+  userData: User;
+  errorMessage?: string;
+};
+
+export type ServerError = {
+  success: boolean;
+  errorMessage: string;
+};
+
+export type AuthContextType = {
+  token: string | null;
+  setToken: Dispatch<SetStateAction<string | null>>;
+  currentUserId: string | null;
+  setCurrentUserId: Dispatch<SetStateAction<string | null>>;
+  userResponse: SelectedOption[];
+  setUserResponse: Dispatch<SetStateAction<SelectedOption[]>>;
+  showLoader: boolean;
+  setShowLoader: Dispatch<SetStateAction<boolean>>;
+  handleSignUp: (
+    username: string,
+    email: string,
+    password: string,
+    setUsername: Dispatch<SetStateAction<string>>,
+    setEmail: Dispatch<SetStateAction<string>>,
+    setPassword: Dispatch<SetStateAction<string>>,
+    setConfirmPassword: Dispatch<SetStateAction<string>>
+  ) => Promise<UserResponse | ServerError | void>;
+  handleLogin: (
+    email: string,
+    password: string,
+    setEmail: Dispatch<SetStateAction<string>>,
+    setPassword: Dispatch<SetStateAction<string>>
+  ) => Promise<UserResponse | ServerError>;
+  handleLogout: () => void;
+  getUserData: (
+    currentUserId: string | null
+  ) => Promise<undefined | ServerError>;
+  sendUserResponse: (
+    quizId: string
+  ) => Promise<SaveUserResponseType | ServerError | void>;
+  currentQuizResponse: QuizTaken;
+  // toggleRedirect: boolean;
+  // setToggleRedirect: Dispatch<SetStateAction<boolean>>;
+};
+
+export type userDataResponse = {
+  success: boolean;
+  _id: string;
+  username: string;
+  email: string;
+  quizTaken: QuizTaken[];
+};
+
+export type SaveUserResponseType = {
+  id: string;
 };
 
 export type AuthProviderProp = {
@@ -55,72 +110,283 @@ export const AuthContext = createContext<AuthContextType>(
 );
 
 export const AuthProvider = ({ children }: AuthProviderProp) => {
-  const [username, setUsername] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>("");
-  const [error, setError] = useState<string>("");
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] =
-    useState<boolean>(false);
+  const [showLoader, setShowLoader] = useState<boolean>(false);
+  const [userResponse, setUserResponse] = useState<SelectedOption[]>([]);
+  const [currentQuizResponse, setCurrentQuizResponse] = useState<QuizTaken>({
+    _id: "",
+    quizId: "",
+    totalScore: 0,
+    answerTaken: [],
+  });
+  // const [toggleRedirect, setToggleRedirect] = useState<boolean>(false);
+  // const [userData, setUserData] = useState<UserResponseData>({
+  //   email: "",
+  //   username: "",
+  //   quizTaken: [],
+  // });
 
-  const handleSignUp = async () => {
-    if (
-      username === "" ||
-      email === "" ||
-      password === "" ||
-      confirmPassword === ""
-    ) {
-      return setError("Any of the input fields cannot be empty");
-    }
+  const { state, dispatch } = useQuizData();
 
-    if (password !== confirmPassword) {
-      return setError("Password and confirm password should be equal");
-    }
+  const navigate = useNavigate();
+  let savedToken, savedCurrentUserId;
 
-    // email validation
-    if (!validateEmail(email)) {
-      return setError("Please enter valid email id");
-    }
+  localStorage.getItem("token")
+    ? (savedToken = JSON.parse(localStorage.getItem("token") as string))
+    : (savedToken = null);
 
-    // password validation
-    if (!validatePassword(password)) {
-      return setError(
-        "password between 6 to 20 characters which contain at least one numeric digit, one uppercase and one lowercase letter"
+  localStorage.getItem("userId")
+    ? (savedCurrentUserId = JSON.parse(
+        localStorage.getItem("userId") as string
+      ))
+    : (savedCurrentUserId = null);
+
+  const [token, setToken] = useState<string | null>(savedToken);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(
+    savedCurrentUserId
+  );
+
+  // GET USER DATA
+  const getUserData = async (
+    currentUserId: string | null
+  ): Promise<undefined | ServerError> => {
+    try {
+      const response = await axios.get<userDataResponse>(
+        `${getUserDataURL}/${currentUserId}`
       );
+
+      const responseData = {
+        _id: response.data._id,
+        username: response.data.username,
+        email: response.data.email,
+        quizTaken: response.data.quizTaken,
+      };
+
+      dispatch({
+        type: "INITIALIZE_USER_DATA",
+        payload: { userData: responseData },
+      });
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const serverError = error as AxiosError<ServerError>;
+
+        if (serverError && serverError.response?.data) {
+          return serverError.response.data;
+        }
+      }
+
+      return {
+        success: false,
+        errorMessage: "Something went wrong in the getUserData",
+      };
     }
+  };
 
-    const response = await axios.post(`${signupURL}`, {
-      user: { username, email, password },
+  // SAVE USER RESPONSE
+  const sendUserResponse = async (
+    quizId: string
+  ): Promise<SaveUserResponseType | ServerError | void> => {
+    try {
+      dispatch({ type: "TOGGLE_IS_END_TRUE" });
+
+      const response = await axios.post(
+        `${saveUserResponseURL}/${currentUserId}`,
+        {
+          quiz: {
+            quizId: quizId,
+            totalScore: state.currentUserPoint,
+            answerTaken: userResponse,
+          },
+        }
+      );
+
+      console.log({ response });
+
+      if (response.data.success) {
+        setUserResponse([]);
+        dispatch({ type: "RESET_STARTING_QUESTION_INDEX" });
+        dispatch({ type: "RESET_USER_SCORE_POINT" });
+        dispatch({
+          type: "SAVE_USER_RESPONSE",
+          payload: { quizTaken: response.data.saveUser.quizTaken.at(-1) },
+        });
+        localStorage.setItem(
+          "currentQuizResponse",
+          JSON.stringify(response.data.saveUser.quizTaken.at(-1))
+        );
+        setCurrentQuizResponse(response.data.saveUser.quizTaken.at(-1));
+        navigate("/result", {
+          state: {
+            type: "COMING_FROM_ANSWER_CARD",
+          },
+        });
+        // setToggleRedirect(true);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const serverError = error as AxiosError<ServerError>;
+
+        if (serverError && serverError.response) {
+          return serverError.response.data;
+        }
+      }
+    }
+  };
+
+  // HANDLE SIGNUP
+  const handleSignUp = async (
+    username: string,
+    email: string,
+    password: string,
+    setUsername: Dispatch<SetStateAction<string>>,
+    setEmail: Dispatch<SetStateAction<string>>,
+    setPassword: Dispatch<SetStateAction<string>>,
+    setConfirmPassword: Dispatch<SetStateAction<string>>
+  ): Promise<UserResponse | ServerError | void> => {
+    try {
+      setShowLoader(true);
+      const response = await axios.post<UserResponse>(`${signupURL}`, {
+        user: { username, email, password },
+      });
+
+      console.log({ response });
+
+      if (response.data.success) {
+        setUsername("");
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
+        setShowLoader(false);
+
+        localStorage.setItem("token", JSON.stringify(response.data.token));
+        localStorage.setItem(
+          "userId",
+          JSON.stringify(response.data.userData._id)
+        );
+
+        setToken(response.data.token);
+        setCurrentUserId(response.data.userData._id);
+        dispatch({
+          type: "INITIALIZE_USER_DATA",
+          payload: {
+            userData: {
+              _id: response.data.userData._id,
+              email: response.data.userData.email,
+              username: response.data.userData.username,
+              quizTaken: response.data.userData.quizTaken,
+            },
+          },
+        });
+        navigate("/");
+      } else {
+        setShowLoader(false);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const serverError = error as AxiosError<ServerError>;
+
+        if (serverError && serverError.response) {
+          return serverError.response.data;
+        }
+      }
+
+      return {
+        success: false,
+        errorMessage: "Something went wrong in handleSignUp",
+      };
+    }
+  };
+
+  // HANDLE LOGOUT
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    setToken("");
+    setCurrentUserId("");
+    dispatch({
+      type: "FLUSH_DATA",
     });
+    navigate("/login");
+  };
 
-    console.log({ response });
+  // HANDLE LOGIN
+  const handleLogin = async (
+    email: string,
+    password: string,
+    setEmail: Dispatch<SetStateAction<string>>,
+    setPassword: Dispatch<SetStateAction<string>>
+  ): Promise<UserResponse | ServerError> => {
+    try {
+      setShowLoader(true);
+      console.log({ email }, { password });
+      const response = await axios.post(loginURL, { email, password });
 
-    setUsername("");
-    setEmail("");
-    setPassword("");
-    setConfirmPassword("");
-    setError("");
+      console.log("handleLogin", { response });
+
+      if (response.data.success) {
+        setEmail("");
+        setPassword("");
+        setShowLoader(false);
+
+        localStorage.setItem("token", JSON.stringify(response.data.token));
+        localStorage.setItem(
+          "userId",
+          JSON.stringify(response.data.userData._id)
+        );
+
+        setToken(response.data.token);
+        setCurrentUserId(response.data.userData._id);
+        dispatch({
+          type: "INITIALIZE_USER_DATA",
+          payload: {
+            userData: {
+              _id: response.data.userData._id,
+              email: response.data.userData.email,
+              username: response.data.userData.username,
+              quizTaken: response.data.userData.quizTaken,
+            },
+          },
+        });
+        navigate("/");
+      } else {
+        setShowLoader(false);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const serverError = error as AxiosError<ServerError>;
+
+        if (serverError && serverError.response) {
+          return serverError.response.data;
+        }
+      }
+
+      return {
+        success: false,
+        errorMessage: "Something went wrong in handleLogin",
+      };
+    }
   };
 
   return (
     <AuthContext.Provider
       value={{
-        username,
-        setUsername,
-        email,
-        setEmail,
-        password,
-        setPassword,
-        confirmPassword,
-        setConfirmPassword,
-        error,
-        setError,
-        showPassword,
-        setShowPassword,
-        showConfirmPassword,
-        setShowConfirmPassword,
+        token,
+        setToken,
+        currentUserId,
+        setCurrentUserId,
+        userResponse,
+        setUserResponse,
+        showLoader,
+        setShowLoader,
         handleSignUp,
+        handleLogin,
+        handleLogout,
+        sendUserResponse,
+        getUserData,
+        currentQuizResponse,
+        // toggleRedirect,
+        // setToggleRedirect,
       }}
     >
       {children}

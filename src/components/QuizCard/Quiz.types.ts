@@ -6,6 +6,7 @@ export type AnswerType = {
 
 export type QuestionType = {
   _id: string;
+  quizId: string;
   img: string;
   point: number;
   questionText: string;

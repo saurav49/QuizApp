@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.5em 3em;
+  padding: 0.5em 3em;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
     rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 }
@@ -16,6 +16,17 @@
   border: none;
   background: none;
   font-size: 2rem;
+  cursor: pointer;
+  margin: 0.2em 1em 0em 0em;
+}
+
+.userBtn {
+  border: none;
+  background: none;
+  font-size: 2rem;
+  cursor: pointer;
+  padding-left: 1em;
+  margin-top: 0.3em;
 }
 
 .navbarBtnDark {
@@ -34,4 +45,54 @@
 .navbarLight {
   background-color: #dee4e7;
   color: #333;
+}
+
+.logoutBtnWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbarLogoutBtn {
+  border: none;
+  background: none;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0em;
+  margin-top: 0.8em;
+}
+
+.navbarLogoutBtnDark {
+  color: #fff;
+}
+
+.navbarLogoutBtnLight {
+  color: #102a43;
+}
+
+.brandName {
+  cursor: pointer;
+}
+
+.logOutbtnTextStyle {
+  font-size: 0.75rem;
+}
+
+.btnsWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.2em 0.5em;
+}
+
+@media screen and (max-width: 571px) {
+  .navbar {
+    flex-direction: column;
+    padding: 1em 3em;
+  }
+
+  .btnsWrapper {
+    margin: 0.5em 0em;
+  }
 }

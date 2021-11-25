@@ -22,3 +22,12 @@
   letter-spacing: 1px;
   margin: 0.5em 0em 2em 0em;
 }
+
+.questionCardImage {
+  min-width: 310px;
+  width: 40%;
+  border: 2px solid #fff;
+  border-radius: 1em;
+  margin-bottom: 1em;
+  object-fit: cover;
+}

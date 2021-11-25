@@ -1,32 +1,74 @@
-import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./SignUp.module.css";
-import { useTheme, useAuth } from "../../hooks/index";
+import { useTheme } from "../../hooks/index";
+import { useAuth } from "../../hooks/useAuth";
 import { BsPeopleCircle } from "react-icons/bs";
 import { HiEye, HiOutlineEyeOff } from "react-icons/hi";
-import { backendURL } from "../../utils";
+import { validateEmail, validatePassword, validateUsername } from "../../utils";
+import Loader from "react-loader-spinner";
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const [username, setUsername] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
+  const [error, setError] = useState<string>("");
   const { theme } = useTheme();
-  const {
-    username,
-    setUsername,
-    email,
-    setEmail,
-    password,
-    setPassword,
-    confirmPassword,
-    setConfirmPassword,
-    error,
-    setError,
-    showPassword,
-    setShowPassword,
-    showConfirmPassword,
-    setShowConfirmPassword,
-    handleSignUp,
-  } = useAuth();
+  // console.log("SignUp", useAuth);
+
+  const { handleSignUp, showLoader } = useAuth();
+
+  const checkInputValidation = (
+    username: string,
+    email: string,
+    password: string,
+    confirmPassword: string
+  ) => {
+    if (
+      username.length === 0 ||
+      email.length === 0 ||
+      password.length === 0 ||
+      confirmPassword.length === 0
+    ) {
+      return setError("Input Fields cannot be empty");
+    }
+
+    if (!validateEmail(email)) {
+      return setError("Enter a valid Email");
+    }
+
+    if (!validatePassword(password)) {
+      return setError(
+        "Password should contain atleast 6 characters of atleast lowercase, uppercase and numeric integer"
+      );
+    }
+
+    if (!validateUsername(username)) {
+      return setError("Enter a valid username");
+    }
+
+    if (password !== confirmPassword) {
+      return setError("Password and confirm password should match");
+    }
+
+    console.log("SignUp Hello");
+    setError("");
+
+    handleSignUp(
+      username,
+      email,
+      password,
+      setUsername,
+      setEmail,
+      setPassword,
+      setConfirmPassword
+    );
+  };
 
   const navigateToLoginPage = () => {
     navigate("/login");
@@ -123,13 +165,26 @@ const SignUp = () => {
             />
           )}
         </div>
-        <p>{error !== "" && error}</p>
+        <p>{error.length > 0 && error}</p>
         <button
-          disabled={password !== confirmPassword}
           className={styles.btn}
-          onClick={() => handleSignUp()}
+          onClick={() =>
+            checkInputValidation(username, email, password, confirmPassword)
+          }
         >
-          Sign Up <BsPeopleCircle className={styles.btnIcon} />
+          {showLoader ? (
+            <Loader
+              type="ThreeDots"
+              color="#00BFFF"
+              height={20}
+              width={70}
+              timeout={3000}
+            />
+          ) : (
+            <>
+              Sign Up <BsPeopleCircle className={styles.btnIcon} />
+            </>
+          )}
         </button>
       </div>
     </div>

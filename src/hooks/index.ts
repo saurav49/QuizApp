@@ -1,3 +1,4 @@
-export { useTheme } from "./useTheme";
-export { useQuizData } from "./useQuizData";
-export { useAuth } from "./useAuth";
+import { useTheme } from "./useTheme";
+import { useQuizData } from "./useQuizData";
+
+export { useTheme, useQuizData };

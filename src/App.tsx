@@ -1,10 +1,18 @@
 import { Navbar, Question } from "./components/index";
 import { Routes, Route } from "react-router-dom";
-import { Home, PrivateRoute, Login, SignUp } from "./pages/index";
-import { InitializeData } from "./utils";
+import {
+  Home,
+  PrivateRoute,
+  Login,
+  SignUp,
+  UserPage,
+  Result,
+} from "./pages/index";
+import { InitializeUserData, InitializeData } from "./utils";
 
 function App() {
   InitializeData();
+  InitializeUserData();
 
   return (
     <div>
@@ -13,7 +21,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/SignUp" element={<SignUp />} />
-        <PrivateRoute isLogin={true} path="/question" element={<Question />} />
+        <PrivateRoute path="/question" element={<Question />} />
+        <PrivateRoute path="/user" element={<UserPage />} />
+        <PrivateRoute path="/result" element={<Result />} />
       </Routes>
     </div>
   );

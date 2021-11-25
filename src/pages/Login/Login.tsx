@@ -2,10 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./Login.module.css";
 import { useTheme } from "../../hooks/index";
+import { useAuth } from "../../hooks/useAuth";
+
 import { RiLoginCircleLine } from "react-icons/ri";
-import { backendURL } from "../../utils";
-import axios from "axios";
 import { HiEye, HiOutlineEyeOff } from "react-icons/hi";
+import { validateEmail, validatePassword } from "../../utils";
+import Loader from "react-loader-spinner";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -15,26 +17,39 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
+  const { handleLogin, showLoader } = useAuth();
+
   const navigateToSignUpPage = () => {
     navigate("/SignUp");
   };
 
-  const handleLogin = async () => {
-    if (email === "" || password === "") {
-      setError("Email or Password cannot be empty!");
+  const handleUserCredentials = async (email: string, password: string) => {
+    if (email.length === 0 || password.length === 0) {
+      setError("Input field cannot be empty");
     }
 
-    const response = await axios.post(`${backendURL}/user/login`, {
-      user: { email, password },
-    });
-    console.log({ response });
-
-    if (response.data.success) {
+    if (!validateEmail(email)) {
       setEmail("");
-      setPassword("");
-
-      navigate("/question");
+      setError("Enter valid email");
     }
+
+    if (!validatePassword(password)) {
+      setPassword("");
+      setError("Enter valid password");
+    }
+
+    const { success, errorMessage } = await handleLogin(
+      email,
+      password,
+      setEmail,
+      setPassword
+    );
+
+    success
+      ? setError("")
+      : errorMessage !== undefined
+      ? setError(errorMessage)
+      : setError("Something went wrong in handleLogin");
   };
 
   return (
@@ -95,10 +110,21 @@ const Login = () => {
         {error.length > 0 && <span> {error} </span>}
         <button
           className={styles.btn}
-          onClick={() => handleLogin()}
-          disabled={error.length > 0}
+          onClick={() => handleUserCredentials(email, password)}
         >
-          Login <RiLoginCircleLine className={styles.btnIcon} />
+          {showLoader ? (
+            <Loader
+              type="ThreeDots"
+              color="#00BFFF"
+              height={20}
+              width={70}
+              timeout={3000}
+            />
+          ) : (
+            <>
+              Login <RiLoginCircleLine className={styles.btnIcon} />
+            </>
+          )}
         </button>
       </div>
     </div>

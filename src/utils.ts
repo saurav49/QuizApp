@@ -1,33 +1,93 @@
-import { useEffect } from "react";
+import { useEffect, Dispatch } from "react";
 import axios from "axios";
 import { useQuizData } from "./hooks/index";
+import { useAuth } from "./hooks/useAuth";
+import { ActionType } from "./context/quizContext.types";
 
-export const backendURL = `https://quizBackend.saurav49.repl.co`;
-export const signupURL = `https://quizBackend.saurav49.repl.co/user/signup`;
-export const loginURL = `https://quizBackend.saurav49.repl.co/user/login`;
+const backendURL = `https://quizBackend.saurav49.repl.co`;
+const signupURL = `${backendURL}/user/signup`;
+const loginURL = `${backendURL}/user/login`;
+const saveUserResponseURL = `${backendURL}/user/save-user-response`;
+const getUserDataURL = `${backendURL}/user/get-user`;
+const deleteQuizAttemptURL = `${backendURL}/user/remove-quiz-response`;
 
-export const validateEmail = (email: string): boolean => {
+const validateEmail = (email: string): boolean => {
   // eslint-disable-next-line no-useless-escape
   const re =
-    /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
   return re.test(email);
 };
 
-export const validatePassword = (password: string): boolean => {
+const validatePassword = (password: string): boolean => {
   // eslint-disable-next-line no-useless-escape
-  const re = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{4,8}$/;
+  const re = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
   return re.test(password);
 };
 
+const validateUsername = (username: string): boolean => {
+  const re = /^[a-zA-Z]/;
+  return re.test(username);
+};
+
 const InitializeData = () => {
-  const { setQuizzes } = useQuizData();
+  const { dispatch } = useQuizData();
 
   useEffect(() => {
     (async function () {
       const { data } = await axios.get(`${backendURL}/quiz`);
-      setQuizzes(data.quizzes);
+
+      dispatch({
+        type: "INITIALIZE_ALL_QUIZZES",
+        payload: { allQuizzes: data.quizzes },
+      });
     })();
-  }, [setQuizzes]);
+  }, []);
 };
 
-export { InitializeData };
+const InitializeUserData = () => {
+  const { getUserData } = useAuth();
+
+  useEffect(() => {
+    (async function () {
+      if (JSON.parse(localStorage.getItem("userId") as string)) {
+        getUserData(JSON.parse(localStorage.getItem("userId") as string));
+      }
+    })();
+  }, []);
+};
+
+const deleteQuizResponse = async (
+  userID: string,
+  quizID: string,
+  dispatch: Dispatch<ActionType>
+) => {
+  try {
+    const response = await axios.delete(`${deleteQuizAttemptURL}/${userID}`, {
+      data: { id: quizID },
+    });
+
+    dispatch({
+      type: "DELETE_USER_RESPONSE",
+      payload: { quizId: quizID },
+    });
+
+    console.log({ response });
+  } catch (error) {
+    console.log(error);
+    alert(error);
+  }
+};
+
+export {
+  InitializeData,
+  validateEmail,
+  validatePassword,
+  validateUsername,
+  backendURL,
+  signupURL,
+  loginURL,
+  saveUserResponseURL,
+  getUserDataURL,
+  deleteQuizResponse,
+  InitializeUserData,
+};

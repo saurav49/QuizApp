@@ -1,56 +1,110 @@
 import styles from "./AnswerCard.module.css";
 import { useTheme, useQuizData } from "../../hooks/index";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
+import { useAuth } from "../../hooks/useAuth";
 
 export type SelectedOption = {
-  _id: string;
-  answerText: string;
+  questionId: string;
+  selectedOptionId: string;
   isRight?: boolean;
 };
 
 export type AnswerCardType = {
   _id: string;
+  questionId: string;
   answerText: string;
   isRight: boolean;
-  questionId: string;
+  quizId: string;
 };
 
 const AnswerCard = ({
-  questionId,
   _id,
+  questionId,
+  quizId,
   answerText,
   isRight,
 }: AnswerCardType) => {
   const { theme } = useTheme();
-  const { setStartingQuestion, isClicked, setIsClicked } = useQuizData();
+  const { state, dispatch } = useQuizData();
+
   const [selectedOption, setSelectedOption] = useState<SelectedOption>({
-    _id: "",
-    answerText: "",
+    questionId: "",
+    selectedOptionId: "",
   });
+  const {
+    setUserResponse,
+    sendUserResponse,
+    // toggleRedirect,
+    // setToggleRedirect,
+  } = useAuth();
+  const [triggerUserResponse, setTriggerResponse] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   let answerTheme: object = {};
 
-  const handleAnswer = () => {
-    setIsClicked(true);
+  useEffect(() => {
+    if (triggerUserResponse) {
+      sendUserResponse(quizId);
+      setTriggerResponse(false);
+    }
+  }, [triggerUserResponse]);
 
-    setSelectedOption({ _id, answerText, isRight });
+  const handleAnswer = () => {
+    dispatch({ type: "TOGGLE_IS_CLICKED_TRUE" });
+
+    isRight
+      ? dispatch({ type: "INCREMENT_SCORE", payload: { score: 5 } })
+      : dispatch({ type: "DECREMENT_SCORE", payload: { score: 0 } });
+
+    setSelectedOption({
+      questionId: questionId,
+      selectedOptionId: _id,
+      isRight,
+    });
+
+    setUserResponse((userResponse) => [
+      ...userResponse,
+      {
+        questionId: questionId,
+        selectedOptionId: _id,
+        isRight,
+      },
+    ]);
 
     // Take me to the next question
+    state.startingQuestion < 4 &&
+      setTimeout(() => {
+        console.log("ANSWER_CARD", state.startingQuestion);
+        dispatch({
+          type: "INCREMENT_STARTING_QUESTION_INDEX",
+          payload: { incrementNo: 1 },
+        });
+
+        dispatch({ type: "TOGGLE_IS_CLICKED_FALSE" });
+      }, 1500);
+
     setTimeout(() => {
-      setStartingQuestion((value) => (value < 4 ? value + 1 : value));
-      setIsClicked(false);
-    }, 2000);
+      if (state.isEnd) {
+        dispatch({ type: "RESET_STARTING_QUESTION_INDEX" });
+        dispatch({ type: "TOGGLE_IS_END_FALSE" });
+      }
+    }, 1700);
+
+    if (state.startingQuestion === 4) {
+      setTriggerResponse(true);
+    }
   };
 
-  if (selectedOption._id !== "" && isRight) {
+  if (selectedOption.selectedOptionId !== "" && isRight) {
     isRight === selectedOption.isRight
       ? (answerTheme = { backgroundColor: "#34d399" })
       : (answerTheme = { backgroundColor: "#f87171" });
-  } else if (!isRight && selectedOption._id !== "") {
+  } else if (!isRight && selectedOption.selectedOptionId !== "") {
     !isRight === !selectedOption.isRight
       ? (answerTheme = { backgroundColor: "#f87171" })
       : (answerTheme = {});
-  } else if (isRight && isClicked && isRight !== selectedOption.isRight) {
+  } else if (isRight && state.isClicked && isRight !== selectedOption.isRight) {
     answerTheme = { backgroundColor: "#34d399" };
   }
 

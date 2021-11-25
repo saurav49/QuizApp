@@ -1,5 +1,7 @@
-export { Navbar } from "./Navbar/Navbar";
-export { QuizCard } from "./QuizCard/QuizCard";
-export { Question } from "./Question/Question";
-export { QuestionCard } from "./QuestionCard/QuestionCard";
-export { AnswerCard } from "./AnswerCard/AnswerCard";
+import { Navbar } from "./Navbar/Navbar";
+import { QuizCard } from "./QuizCard/QuizCard";
+import { Question } from "./Question/Question";
+import { QuestionCard } from "./QuestionCard/QuestionCard";
+import { AnswerCard } from "./AnswerCard/AnswerCard";
+
+export { Navbar, QuizCard, Question, QuestionCard, AnswerCard };

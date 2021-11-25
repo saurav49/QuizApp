@@ -1,15 +1,19 @@
 import { Route, Navigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 
 export type PrivateRouteType = {
-  isLogin: boolean;
   path: string;
   element: any;
 };
 
-const PrivateRoute = ({ isLogin, path, element }: PrivateRouteType) => {
+const PrivateRoute = ({ path, element }: PrivateRouteType) => {
+  // console.log("PrivateRoute", useAuth);
+
+  const { token } = useAuth();
+
   return (
     <>
-      {isLogin ? (
+      {token ? (
         <Route path={path} element={element} />
       ) : (
         <Navigate state={{ from: path }} replace to="/login" />
