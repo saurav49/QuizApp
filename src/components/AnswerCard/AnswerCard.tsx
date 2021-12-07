@@ -1,7 +1,6 @@
 import styles from "./AnswerCard.module.css";
 import { useTheme, useQuizData } from "../../hooks/index";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
 import { useAuth } from "../../hooks/useAuth";
 
 export type SelectedOption = {
@@ -39,7 +38,6 @@ const AnswerCard = ({
     // setToggleRedirect,
   } = useAuth();
   const [triggerUserResponse, setTriggerResponse] = useState<boolean>(false);
-  const navigate = useNavigate();
 
   let answerTheme: object = {};
 
@@ -48,7 +46,7 @@ const AnswerCard = ({
       sendUserResponse(quizId);
       setTriggerResponse(false);
     }
-  }, [triggerUserResponse]);
+  }, [triggerUserResponse, quizId, sendUserResponse]);
 
   const handleAnswer = () => {
     dispatch({ type: "TOGGLE_IS_CLICKED_TRUE" });

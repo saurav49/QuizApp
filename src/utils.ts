@@ -41,7 +41,7 @@ const InitializeData = () => {
         payload: { allQuizzes: data.quizzes },
       });
     })();
-  }, []);
+  }, [dispatch]);
 };
 
 const InitializeUserData = () => {
@@ -53,7 +53,7 @@ const InitializeUserData = () => {
         getUserData(JSON.parse(localStorage.getItem("userId") as string));
       }
     })();
-  }, []);
+  }, [getUserData]);
 };
 
 const deleteQuizResponse = async (
