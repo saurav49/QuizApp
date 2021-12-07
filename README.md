@@ -14,7 +14,7 @@ Live Link : https://quizappmern.netlify.app/
 
 - Switch between Dark/Light them
 - Shows correct/incorrect response in realtime while attempting the quiz
-- User profile where the user can check previous attemps along which shows correct/incorrect response
+- User profile where the user can check previous attemps and each particular attempt shows correct/incorrect response
 - Public and Private Routes (accessible only on login)
 - Login and SignUp with form validation(without any library)
 - Persistant login
