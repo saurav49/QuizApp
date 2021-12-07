@@ -4,7 +4,7 @@ Live Link : https://quizappmern.netlify.app/
 
 ## Tech Stack
 
-**Front End:** ReactJS, CSS3
+**Front End:** ReactJS, CSS3, Typescript
 
 **Server:** NodeJS, ExpressJS
 
