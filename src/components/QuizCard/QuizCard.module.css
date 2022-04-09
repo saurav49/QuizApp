@@ -5,6 +5,7 @@
   width: 400px;
   cursor: pointer;
   margin: 1em 0em;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }
 
 .quizDark {
@@ -18,7 +19,9 @@
 }
 
 .quizImg {
-  border-radius: 1em;
+  border-top-left-radius: 1em;
+  border-top-right-radius: 1em;
+  width: 100%;
 }
 
 .quizName {

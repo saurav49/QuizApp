@@ -17,7 +17,7 @@ const Home = () => {
     >
       {state.quizzes?.map((quiz: QuizType, index: number) => {
         return (
-          <div key={index}>
+          <div key={index} className={styles.quizCardWrapper}>
             {state.quizDataLoader ? (
               <Loader
                 type="ThreeDots"
