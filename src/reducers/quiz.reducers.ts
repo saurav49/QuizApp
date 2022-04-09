@@ -46,7 +46,11 @@ export const Reducer = (
         ...state,
         currentUserPoint: state.currentUserPoint - action.payload.score,
       };
-
+      case "TOGGLE_QUIZ_DATA_LOADER":
+      return {
+        ...state,
+        quizDataLoader: !state.quizDataLoader
+      }
     case "TOGGLE_IS_CLICKED_FALSE":
       return {
         ...state,

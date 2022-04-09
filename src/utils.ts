@@ -34,12 +34,17 @@ const InitializeData = () => {
 
   useEffect(() => {
     (async function () {
-      const { data } = await axios.get(`${backendURL}/quiz`);
-
       dispatch({
-        type: "INITIALIZE_ALL_QUIZZES",
-        payload: { allQuizzes: data.quizzes },
-      });
+        type: "TOGGLE_QUIZ_DATA_LOADER"
+      })
+      const  { data } = await axios.get(`${backendURL}/quiz`);
+        dispatch({
+          type: "INITIALIZE_ALL_QUIZZES",
+          payload: { allQuizzes: data.quizzes },
+        });
+        dispatch({
+          type: "TOGGLE_QUIZ_DATA_LOADER"
+        })
     })();
   }, [dispatch]);
 };
@@ -49,11 +54,12 @@ const InitializeUserData = () => {
 
   useEffect(() => {
     (async function () {
-      if (JSON.parse(localStorage.getItem("userId") as string)) {
-        getUserData(JSON.parse(localStorage.getItem("userId") as string));
+      if (JSON.parse(localStorage.getItem("quiz__app__userId") as string)) {
+          getUserData(JSON.parse(localStorage.getItem("quiz__app__userId") as string));
       }
     })();
-  }, [getUserData]);
+    // eslint-disable-next-line
+  }, []);
 };
 
 const deleteQuizResponse = async (
@@ -65,13 +71,13 @@ const deleteQuizResponse = async (
     const response = await axios.delete(`${deleteQuizAttemptURL}/${userID}`, {
       data: { id: quizID },
     });
-
+    console.log(response);
+    
     dispatch({
       type: "DELETE_USER_RESPONSE",
       payload: { quizId: quizID },
     });
 
-    console.log({ response });
   } catch (error) {
     console.log(error);
     alert(error);

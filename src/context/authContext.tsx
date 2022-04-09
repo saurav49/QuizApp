@@ -130,13 +130,13 @@ export const AuthProvider = ({ children }: AuthProviderProp) => {
   const navigate = useNavigate();
   let savedToken, savedCurrentUserId;
 
-  localStorage.getItem("token")
-    ? (savedToken = JSON.parse(localStorage.getItem("token") as string))
+  localStorage.getItem("quiz__app__token")
+    ? (savedToken = JSON.parse(localStorage.getItem("quiz__app__token") as string))
     : (savedToken = null);
 
-  localStorage.getItem("userId")
+  localStorage.getItem("quiz__app__userId")
     ? (savedCurrentUserId = JSON.parse(
-        localStorage.getItem("userId") as string
+        localStorage.getItem("quiz__app__userId") as string
       ))
     : (savedCurrentUserId = null);
 
@@ -199,7 +199,6 @@ export const AuthProvider = ({ children }: AuthProviderProp) => {
         }
       );
 
-      console.log({ response });
 
       if (response.data.success) {
         setUserResponse([]);
@@ -257,9 +256,9 @@ export const AuthProvider = ({ children }: AuthProviderProp) => {
         setConfirmPassword("");
         setShowLoader(false);
 
-        localStorage.setItem("token", JSON.stringify(response.data.token));
+        localStorage.setItem("quiz__app__token", JSON.stringify(response.data.token));
         localStorage.setItem(
-          "userId",
+          "quiz__app__userId",
           JSON.stringify(response.data.userData._id)
         );
 
@@ -298,8 +297,8 @@ export const AuthProvider = ({ children }: AuthProviderProp) => {
 
   // HANDLE LOGOUT
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
+    localStorage.removeItem("quiz__app__token");
+    localStorage.removeItem("quiz__app__userId");
     setToken("");
     setCurrentUserId("");
     dispatch({
@@ -317,19 +316,15 @@ export const AuthProvider = ({ children }: AuthProviderProp) => {
   ): Promise<UserResponse | ServerError> => {
     try {
       setShowLoader(true);
-      console.log({ email }, { password });
       const response = await axios.post(loginURL, { email, password });
-
-      console.log("handleLogin", { response });
-
       if (response.data.success) {
         setEmail("");
         setPassword("");
         setShowLoader(false);
 
-        localStorage.setItem("token", JSON.stringify(response.data.token));
+        localStorage.setItem("quiz__app__token", JSON.stringify(response.data.token));
         localStorage.setItem(
-          "userId",
+          "quiz__app__userId",
           JSON.stringify(response.data.userData._id)
         );
 
@@ -346,7 +341,6 @@ export const AuthProvider = ({ children }: AuthProviderProp) => {
             },
           },
         });
-        navigate("/");
       } else {
         setShowLoader(false);
       }

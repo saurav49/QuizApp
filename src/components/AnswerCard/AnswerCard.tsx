@@ -73,7 +73,6 @@ const AnswerCard = ({
     // Take me to the next question
     state.startingQuestion < 4 &&
       setTimeout(() => {
-        console.log("ANSWER_CARD", state.startingQuestion);
         dispatch({
           type: "INCREMENT_STARTING_QUESTION_INDEX",
           payload: { incrementNo: 1 },

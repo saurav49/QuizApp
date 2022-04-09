@@ -12,10 +12,11 @@ const UserPage = () => {
   const navigate = useNavigate();
 
   InitializeUserData();
-  console.log({ state });
 
   const handleDelete = (quizId: string) => {
-    const userId = JSON.parse(localStorage.getItem("userId") as string);
+    const userId = JSON.parse(
+      localStorage.getItem("quiz__app__userId") as string
+    );
     deleteQuizResponse(userId, quizId, dispatch);
 
     // REFRESH THE PAGE

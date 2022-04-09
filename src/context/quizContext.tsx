@@ -38,6 +38,7 @@ export const QuizProvider = ({ children }: QuizProviderType) => {
 
   const quizInitialState: QuizInitalStateType = {
     quizzes: [],
+    quizDataLoader: false,
     startingQuestion: 0,
     chosenQuizId: "",
     isClicked: false,

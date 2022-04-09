@@ -3,6 +3,7 @@ import { UserResponseData, QuizTaken } from "./authContext";
 
 export type QuizInitalStateType = {
   quizzes: QuizType[];
+  quizDataLoader: boolean;
   startingQuestion: number;
   chosenQuizId: string;
   isClicked: boolean;
@@ -53,6 +54,9 @@ export type ActionType =
     }
   | {
       type: "TOGGLE_IS_CLICKED_TRUE";
+    }
+  | {
+      type: 'TOGGLE_QUIZ_DATA_LOADER'
     }
   | {
       type: "TOGGLE_IS_CLICKED";

@@ -9,11 +9,17 @@ import { HiEye, HiOutlineEyeOff } from "react-icons/hi";
 import { validateEmail, validatePassword } from "../../utils";
 import Loader from "react-loader-spinner";
 
+export interface defaultUserType {
+  defaultEmail: string,
+  defaultPassword: string,
+}
+
 const Login = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const defaultUser: defaultUserType = { defaultEmail: 'user1@gmail.com', defaultPassword: 'Users49!' };
+  const [email, setEmail] = useState<string>(defaultUser.defaultEmail);
+  const [password, setPassword] = useState<string>(defaultUser.defaultPassword);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
@@ -45,11 +51,12 @@ const Login = () => {
       setPassword
     );
 
-    success
-      ? setError("")
-      : errorMessage !== undefined
-      ? setError(errorMessage)
-      : setError("Something went wrong in handleLogin");
+    if(success) {
+      setError("");
+      navigate('/');
+    } else {
+      errorMessage!==undefined ? setError(errorMessage) : setError('Something went wrong in handleLogin');
+    }
   };
 
   return (
@@ -121,9 +128,12 @@ const Login = () => {
               timeout={3000}
             />
           ) : (
-            <>
-              Login <RiLoginCircleLine className={styles.btnIcon} />
-            </>
+            <p className={styles.btnTextIconWrapper}>
+              <span>
+                Login 
+              </span>
+              <RiLoginCircleLine className={styles.btnIcon} />
+            </p>
           )}
         </button>
       </div>

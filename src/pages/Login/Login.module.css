@@ -74,6 +74,12 @@ input {
   margin: 0em 0.2em;
 }
 
+.btnTextIconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .navigateBtn {
   margin: 1em 0em;
 }
